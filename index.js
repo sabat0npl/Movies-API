@@ -36,6 +36,8 @@ let topMovies = [{
     },
 ];
 
+const port = process.env.PORT || 8080;
+
 const app = express();
 
 app.use(express.static('public'));
@@ -59,6 +61,6 @@ app.get('/documentation', (req, res) => {
     res.sendFile('public/documentation.html', { root: __dirname });
 });
 
-app.listen(8080, () => {
-    console.log('Your app is listening on port 8080.');
+app.listen(port, () => {
+    console.log(`Your app is listening on port ${port}.`);
 });
