@@ -1,64 +1,49 @@
 const express = require('express'),
-    morgan = require('morgan');
+    morgan = require('morgan'),
+    swaggerUI = require("swagger-ui-express"),
+    swaggerJsDoc = require("swagger-jsdoc"),
+    low = require("lowdb"),
+    moviesRouter = require("./routes/movies.js"),
+    genresRouter = require("./routes/genres.js");
 
-let topMovies = [{
-        title: 'Harry Potter and the Sorcerer\'s Stone'
-    },
-    {
-        title: 'Harry Potter and the Chamber of Secrets'
-    },
-    {
-        title: 'Harry Potter and the Prisoner of Azkaban'
-    },
-    {
-        title: 'Harry Potter and the Goblet of Fire'
-    },
-    {
-        title: 'Harry Potter and the Phoenix Order'
-    },
-    {
-        title: 'Harry Potter and the Halfblood Prince'
-    },
-    {
-        title: 'Harry Potter and the Deadly Hallows pt.1'
-    },
-    {
-        title: 'Harry Potter and the Deadly Hallows pt.2'
-    },
-    {
-        title: 'Lord of the Rings: Fellowship of the Ring'
-    },
-    {
-        title: 'Lord of the Rings: Two Towers'
-    },
-    {
-        title: 'Lord of the Rings: Return of the King'
-    },
-];
+const port = process.env.port || 8080;
+
+const FileSync = require("lowdb/adapters/FileSync");
+
+const adapter = new FileSync("db.json");
+const db = low(adapter);
+
+db.defaults({ books: [] }).write();
+
+const options = {
+	definition: {
+		openapi: "3.0.0",
+		info: {
+			title: "Library API",
+			version: "1.0.0",
+			description: "A simple Express Library API",
+		},
+		servers: [
+			{
+				url: "http://localhost:8080",
+			},
+		],
+	},
+	apis: ["./routes/*.js"],
+};
+
+const specs = swaggerJsDoc(options);
 
 const app = express();
 
-app.use(express.static('public'));
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
-app.use(morgan('common'));
+app.db = db;
 
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(404).send('Ups wrong address');
-});
+app.use(express.json());
+app.use(morgan("dev"));
 
-app.get('/movies', (req, res) => {
-    res.json(topMovies);
-});
+app.use("/movies", moviesRouter);
+app.use("/genres", genresRouter);
 
-app.get('/', (req, res) => {
-    res.send('Welcome to my app!');
-});
-
-app.get('/documentation', (req, res) => {
-    res.sendFile('public/documentation.html', { root: __dirname });
-});
-
-app.listen(8080, () => {
-    console.log('Your app is listening on port 8080.');
-});
+app.listen(port, () => console.log(`The server is running on port ${port}`));
