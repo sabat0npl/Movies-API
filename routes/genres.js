@@ -49,16 +49,7 @@ const router = express.Router();
  */
 
  router.get("/", (req, res) => {
-    const movies = req.app.db.get("movies");
-    genres = [];
-    movies.forEach(element => { 
-        element.genres.forEach(genre => {
-            genres.includes(genre) ? null : genres.push(genre)
-        })
-        
-    });
-
-    res.send(genres);
+    res.send("Genres list");
 });
 
 /**
@@ -86,15 +77,7 @@ const router = express.Router();
  */
 
 router.get("/:name", (req, res) => {
-    const movie = req.app.db.get("movies").find({
-        genres: req.params.name
-    }).value();
-
-    if (!movie) {
-        res.sendStatus(404)
-    }
-
-    res.send(movie);
+    res.send("Genre page");
 });
 
 module.exports = router;

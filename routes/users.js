@@ -63,19 +63,8 @@ const uuid = require("uuid");
  *         description: Some server error
  */
 
-router.post("/users", (req, res) => {
-    try {
-        const user = {
-            id: uuid.v4(),
-            ...req.body,
-        };
-
-        req.app.db.get("users").push(movie).write();
-
-        res.send(user)
-    } catch (error) {
-        return res.status(500).send(error);
-    }
+router.post("/", (req, res) => {
+    res.send("User succesfully created")
 });
 
 /**
@@ -111,21 +100,7 @@ router.post("/users", (req, res) => {
  */
 
 router.put("/:id", (req, res) => {
-    try {
-        req.app.db
-            .get("users")
-            .find({
-                id: req.params.id
-            })
-            .assign(req.body)
-            .write();
-
-        res.send(req.app.db.get("users").find({
-            id: req.params.id
-        }));
-    } catch (error) {
-        return res.status(500).send(error);
-    }
+    res.send("User updated")
 });
 
 /**
@@ -161,29 +136,14 @@ router.put("/:id", (req, res) => {
  *        description: Some error happened
  */
 
- router.put("/:id:title", (req, res) => {
-    try {
-        req.app.db
-            .get("users")
-            .find({
-                id: req.params.id
-            })
-            .assign(req.body)
-            .write();
-
-        res.send(req.app.db.get("users").find({
-            id: req.params.id
-        }));
-        console.log("Title added to favourites")
-    } catch (error) {
-        return res.status(500).send(error);
-    }
+router.put("/:id/:title", (req, res) => {
+    res.send("Movie added to the favourites")
 });
 
 /**
  * @swagger
  * /users/{name}{title}:
- *  put:
+ *  delete:
  *    summary: Delets the movies from user favourites by the title
  *    tags: [users]
  *    parameters:
@@ -213,23 +173,8 @@ router.put("/:id", (req, res) => {
  *        description: Some error happened
  */
 
- router.put("/:id:title", (req, res) => {
-    try {
-        req.app.db
-            .get("users")
-            .find({
-                id: req.params.id
-            })
-            .assign(req.body)
-            .write();
-
-        res.send(req.app.db.get("users").find({
-            id: req.params.id
-        }));
-        console.log("Title removed from favourites")
-    } catch (error) {
-        return res.status(500).send(error);
-    }
+router.delete("/:id/:title", (req, res) => {
+    res.send("Movie removed from the favourites")
 });
 
 /**
@@ -254,11 +199,7 @@ router.put("/:id", (req, res) => {
  */
 
 router.delete("/:id", (req, res) => {
-    req.app.db.get("users").remove({
-        id: req.params.id
-    }).write();
-
-    res.sendStatus(200);
+    res.send("User removed")
 });
 
 module.exports = router;

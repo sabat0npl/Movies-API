@@ -43,7 +43,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /direcotrs:
+ * /directors:
  *   get:
  *     summary: Returns the list of all the directors
  *     tags: [directors]
@@ -57,16 +57,7 @@ const router = express.Router();
  */
 
  router.get("/", (req, res) => {
-    const movies = req.app.db.get("movies");
-    directors = [];
-    movies.forEach(element => { 
-        element.genres.forEach(genre => {
-            genres.includes(genre) ? null : genres.push(genre)
-        })
-        
-    });
-
-    res.send(genres);
+    res.send("The list of all directors");
 });
 
 /**
@@ -94,15 +85,7 @@ const router = express.Router();
  */
 
 router.get("/:name", (req, res) => {
-    const movie = req.app.db.get("movies").find({
-        genres: req.params.name
-    }).value();
-
-    if (!movie) {
-        res.sendStatus(404)
-    }
-
-    res.send(movie);
+    res.send("Direcotr page");
 });
 
 module.exports = router;

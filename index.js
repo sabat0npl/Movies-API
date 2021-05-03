@@ -4,7 +4,9 @@ const express = require('express'),
     swaggerJsDoc = require("swagger-jsdoc"),
     low = require("lowdb"),
     moviesRouter = require("./routes/movies.js"),
-    genresRouter = require("./routes/genres.js");
+    genresRouter = require("./routes/genres.js"),
+	directorsRouter = require("./routes/directors.js"),
+    usersRouter = require("./routes/users.js");
 
 const port = process.env.port || 8080;
 
@@ -45,5 +47,7 @@ app.use(morgan("dev"));
 
 app.use("/movies", moviesRouter);
 app.use("/genres", genresRouter);
+app.use("/directors", directorsRouter);
+app.use("/users", usersRouter);
 
 app.listen(port, () => console.log(`The server is running on port ${port}`));

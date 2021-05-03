@@ -1,18 +1,6 @@
 {
   "movies": [
     {
-      "id": "1",
-      "title": "Harry Potter and the Sorcerer's Stone",
-      "description": "An orphaned boy enrolls in a school of wizardry, where he learns the truth about himself, his family and the terrible evil that haunts the magical world.",
-      "genre": [
-        "Adventure",
-        "Family",
-        "Fantasy"
-      ],
-      "director": "Chris Columbus",
-      "imageUrl": "https://www.imdb.com/title/tt0241527/mediaviewer/rm683213568/"
-    },
-    {
       "id": "string",
       "title": "string",
       "description": "string",
