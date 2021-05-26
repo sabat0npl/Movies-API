@@ -1,5 +1,15 @@
-const express = require("express");
-const router = express.Router();
+const express = require("express"),
+    router = express.Router(),
+    mongoose = require('mongoose'),
+    Models = require('../js/models.js'),
+    Movies = Models.Movie,
+    Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/myFlixDB', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
+
 
 /**
  * @swagger
@@ -32,26 +42,6 @@ const router = express.Router();
  *           "description": "Movies in the action genre are defined by risk and stakes. While many movies may feature an action sequence, to be appropriately categorized inside the action genre, the bulk of the content must be action-oriented, including fight scenes, stunts, car chases, and general danger."
  */
 
-
-/**
- * @swagger
- * /genres:
- *   get:
- *     summary: Returns the list of all the genres
- *     tags: [genres]
- *     responses:
- *       200:
- *         description: The list of the genres
- *         content:
- *           application/json:
- *             schema:
- *                 $ref: '#/components/schemas/Genre'
- */
-
- router.get("/", (req, res) => {
-    res.send("Genres list");
-});
-
 /**
  * @swagger
  * /genres/{name}:
@@ -76,8 +66,17 @@ const router = express.Router();
  *         description: The movie was not found
  */
 
-router.get("/:name", (req, res) => {
-    res.send("Genre page");
+router.get('/:name', (req, res) => {
+    Movies.findOne({
+            "Genre.Name": req.params.name
+        })
+        .then((genre) => {
+            res.json(genre.Genre);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
 });
 
 module.exports = router;

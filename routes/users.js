@@ -1,6 +1,15 @@
-const express = require("express");
-const router = express.Router();
-const uuid = require("uuid");
+const express = require("express"),
+  router = express.Router(),
+  uuid = require("uuid"),
+  mongoose = require('mongoose'),
+  Models = require('../js/models.js'),
+  Movies = Models.Movie,
+  Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/myFlixDB', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 /**
  * @swagger
@@ -40,6 +49,21 @@ const uuid = require("uuid");
  *   description: The users managing API
  */
 
+// Get a user by username
+router.get('/:Username', (req, res) => {
+  Users.findOne({
+      Username: req.params.Username
+    })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+
 /**
  * @swagger
  * /users:
@@ -63,8 +87,34 @@ const uuid = require("uuid");
  *         description: Some server error
  */
 
-router.post("/", (req, res) => {
-    res.send("User succesfully created")
+router.post('/', (req, res) => {
+  Users.findOne({
+      Username: req.body.Username
+    })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + 'already exists');
+      } else {
+        Users
+          .create({
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          .then((user) => {
+            res.status(201).json(user)
+          })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
 });
 
 /**
@@ -99,8 +149,27 @@ router.post("/", (req, res) => {
  *        description: Some error happened
  */
 
-router.put("/:id", (req, res) => {
-    res.send("User updated")
+router.put('/:Username', (req, res) => {
+  Users.findOneAndUpdate({
+      Username: req.params.Username
+    }, {
+      $set: {
+        Username: req.body.Username,
+        Password: req.body.Password,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday
+      }
+    }, {
+      new: true
+    }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
 });
 
 /**
@@ -136,8 +205,25 @@ router.put("/:id", (req, res) => {
  *        description: Some error happened
  */
 
-router.put("/:id/:title", (req, res) => {
-    res.send("Movie added to the favourites")
+// Add a movie to a user's list of favorites
+router.post('/:Username/Movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({
+      Username: req.params.Username
+    }, {
+      $push: {
+        Favourites: req.params.MovieID
+      }
+    }, {
+      new: true
+    }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
 });
 
 /**
@@ -173,8 +259,24 @@ router.put("/:id/:title", (req, res) => {
  *        description: Some error happened
  */
 
-router.delete("/:id/:title", (req, res) => {
-    res.send("Movie removed from the favourites")
+router.post('/:Username/Movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({
+      Username: req.params.Username
+    }, {
+      $pull: {
+        Favourites: req.params.MovieID
+      }
+    }, {
+      new: true
+    }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
 });
 
 /**
@@ -198,8 +300,22 @@ router.delete("/:id/:title", (req, res) => {
  *         description: The user was not found
  */
 
-router.delete("/:id", (req, res) => {
-    res.send("User removed")
+// Delete a user by username
+router.delete('/users/:Username', (req, res) => {
+  Users.findOneAndRemove({
+      Username: req.params.Username
+    })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.Username + ' was not found');
+      } else {
+        res.status(200).send(req.params.Username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 module.exports = router;

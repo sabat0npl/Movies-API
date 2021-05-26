@@ -1,5 +1,14 @@
-const express = require("express");
-const router = express.Router();
+const express = require("express"),
+    router = express.Router(),
+    mongoose = require('mongoose'),
+    Models = require('../js/models.js'),
+    Movies = Models.Movie,
+    Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/myFlixDB', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
 /**
  * @swagger
@@ -40,26 +49,6 @@ const router = express.Router();
  *           "death year": "Alive"
  */
 
-
-/**
- * @swagger
- * /directors:
- *   get:
- *     summary: Returns the list of all the directors
- *     tags: [directors]
- *     responses:
- *       200:
- *         description: The list of the directors
- *         content:
- *           application/json:
- *             schema:
- *                 $ref: '#/components/schemas/Director'
- */
-
- router.get("/", (req, res) => {
-    res.send("The list of all directors");
-});
-
 /**
  * @swagger
  * /directors/{name}:
@@ -84,8 +73,17 @@ const router = express.Router();
  *         description: The movie was not found
  */
 
-router.get("/:name", (req, res) => {
-    res.send("Direcotr page");
+router.get('/:name', (req, res) => {
+    Movies.findOne({
+            "Director.Name": req.params.name
+        })
+        .then((director) => {
+            res.json(director.Director);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
 });
 
 module.exports = router;

@@ -1,6 +1,15 @@
-const express = require("express");
-const router = express.Router();
-const uuid = require("uuid");
+const express = require("express"),
+    router = express.Router(),
+    uuid = require("uuid"),
+    mongoose = require('mongoose'),
+    Models = require('../js/models.js'),
+    Movies = Models.Movie,
+    Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/myFlixDB', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
 /**
  * @swagger
@@ -66,9 +75,7 @@ const uuid = require("uuid");
  */
 
 router.get("/", (req, res) => {
-    const movies = req.app.db.get("movies");
-
-    res.send(movies);
+    Movies.find().then(movies => res.json(movies));
 });
 
 /**
@@ -95,16 +102,16 @@ router.get("/", (req, res) => {
  *         description: The movie was not found
  */
 
-router.get("/:id", (req, res) => {
-    const movie = req.app.db.get("movies").find({
-        id: req.params.id
-    }).value();
-
-    if (!movie) {
-        res.sendStatus(404)
-    }
-
-    res.send(movie);
+router.get('/:id', (req, res) => {
+    Movies.findById(req.params.id, (error, movie) => {
+        console.log(movie)
+        if (error) {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+        } else {
+            res.json(movie);
+        }
+    });
 });
 
 /**
