@@ -47,7 +47,7 @@ const specs = swaggerJsDoc(options);
 
 const app = express();
 
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+app.use("/documentation", swaggerUI.serve, swaggerUI.setup(specs));
 
 app.db = db;
 

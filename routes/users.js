@@ -18,28 +18,32 @@ mongoose.connect('mongodb://localhost:27017/myFlixDB', {
  *     User:
  *       type: object
  *       required:
- *         - name
- *         - password
+ *         - Username
+ *         - Password
  *       properties:
  *         id:
  *           type: string
  *           description: The auto-generated id of the user
- *         name:
+ *         Username:
  *           type: string
  *           description: The username
- *         password:
+ *         Password:
  *           type: string
  *           description: The user password
- *         favourites:
+ *         Email:
+ *           type: string
+ *           description: The user email
+ *         Favourites:
  *           type: array
  *           items:
- *             type: string
+ *             type: ObjectID
  *           description: List of the user favourites movies
  *         example:
  *           "id": "1"
  *           "title": "BarryG"
+ *           "Email": "asd@asd.com" 
  *           "password": "*********"
- *           "favourites": "[Nemo Nobody, Harry Potter, Lord of The Rings"
+ *           "Favourites": ["60968b6a89e5eb26cad30bca", "60968b6a89e5eb2asdd30bca"]
  */
 
 /**
@@ -174,7 +178,7 @@ router.put('/:Username', (req, res) => {
 
 /**
  * @swagger
- * /users/{name}{title}:
+ * /users/{name}{id}:
  *  put:
  *    summary: Update the user favourites by the name and title
  *    tags: [users]
@@ -206,7 +210,7 @@ router.put('/:Username', (req, res) => {
  */
 
 // Add a movie to a user's list of favorites
-router.post('/:Username/Movies/:MovieID', (req, res) => {
+router.post('/:Username/:MovieID', (req, res) => {
   Users.findOneAndUpdate({
       Username: req.params.Username
     }, {
@@ -259,7 +263,7 @@ router.post('/:Username/Movies/:MovieID', (req, res) => {
  *        description: Some error happened
  */
 
-router.post('/:Username/Movies/:MovieID', (req, res) => {
+router.delete('/:Username/:MovieID', (req, res) => {
   Users.findOneAndUpdate({
       Username: req.params.Username
     }, {
@@ -301,21 +305,20 @@ router.post('/:Username/Movies/:MovieID', (req, res) => {
  */
 
 // Delete a user by username
-router.delete('/users/:Username', (req, res) => {
-  Users.findOneAndRemove({
-      Username: req.params.Username
-    })
-    .then((user) => {
-      if (!user) {
-        res.status(400).send(req.params.Username + ' was not found');
-      } else {
-        res.status(200).send(req.params.Username + ' was deleted.');
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
+router.delete('/:Username', (req, res) => {
+  Users.findOneAndRemove({Username: req.params.Username})
+      .then((user) => {
+          if(!user) {
+              res.status(409).send(req.params.Username + ' was not found.');
+          } else {
+              res.status(200).send(req.params.Username + ' was deleted.');
+          }
+      })
+      .catch((err) => {
+          console.error(err);
+          res.status (500).send('Error: ' + err);
+      });
 });
+
 
 module.exports = router;
