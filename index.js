@@ -1,8 +1,9 @@
+const bodyParser = require('body-parser');
+
 const express = require('express'),
   morgan = require('morgan'),
   swaggerUI = require("swagger-ui-express"),
   swaggerJsDoc = require("swagger-jsdoc"),
-  low = require("lowdb"),
   moviesRouter = require("./routes/movies.js"),
   genresRouter = require("./routes/genres.js"),
   directorsRouter = require("./routes/directors.js"),
@@ -10,7 +11,9 @@ const express = require('express'),
   mongoose = require('mongoose'),
   Models = require('./js/models.js'),
   Movies = Models.Movie,
-  Users = Models.User;
+  Users = Models.User,
+  passport = require('passport');
+require('./js/passport.js');
 
 mongoose.connect('mongodb://localhost:27017/myFlixDB', {
   useNewUrlParser: true,
@@ -18,15 +21,6 @@ mongoose.connect('mongodb://localhost:27017/myFlixDB', {
 });
 
 const port = process.env.port || 8080;
-
-const FileSync = require("lowdb/adapters/FileSync");
-
-const adapter = new FileSync("db.json");
-const db = low(adapter);
-
-db.defaults({
-  books: []
-}).write();
 
 const options = {
   definition: {
@@ -47,9 +41,9 @@ const specs = swaggerJsDoc(options);
 
 const app = express();
 
-app.use("/documentation", swaggerUI.serve, swaggerUI.setup(specs));
+let auth = require('./routes/auth.js')(app);
 
-app.db = db;
+app.use("/documentation", swaggerUI.serve, swaggerUI.setup(specs));
 
 app.use(express.json());
 app.use(morgan("dev"));

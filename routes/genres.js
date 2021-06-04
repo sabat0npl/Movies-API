@@ -3,13 +3,9 @@ const express = require("express"),
     mongoose = require('mongoose'),
     Models = require('../js/models.js'),
     Movies = Models.Movie,
-    Users = Models.User;
-
-mongoose.connect('mongodb://localhost:27017/myFlixDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
-
+    Users = Models.User,
+    passport = require('passport');
+    require('../js/passport.js');
 
 /**
  * @swagger
@@ -66,7 +62,9 @@ mongoose.connect('mongodb://localhost:27017/myFlixDB', {
  *         description: The movie was not found
  */
 
-router.get('/:name', (req, res) => {
+router.get('/:name', passport.authenticate('jwt', {
+    session: false
+}), (req, res) => {
     Movies.findOne({
             "Genre.Name": req.params.name
         })

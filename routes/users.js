@@ -4,12 +4,9 @@ const express = require("express"),
   mongoose = require('mongoose'),
   Models = require('../js/models.js'),
   Movies = Models.Movie,
-  Users = Models.User;
-
-mongoose.connect('mongodb://localhost:27017/myFlixDB', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+  Users = Models.User,
+  passport = require('passport');
+require('../js/passport.js');
 
 /**
  * @swagger
@@ -54,7 +51,9 @@ mongoose.connect('mongodb://localhost:27017/myFlixDB', {
  */
 
 // Get a user by username
-router.get('/:Username', (req, res) => {
+router.get('/:Username', passport.authenticate('jwt', {
+  session: false
+}), (req, res) => {
   Users.findOne({
       Username: req.params.Username
     })
@@ -153,7 +152,9 @@ router.post('/', (req, res) => {
  *        description: Some error happened
  */
 
-router.put('/:Username', (req, res) => {
+router.put('/:Username', passport.authenticate('jwt', {
+  session: false
+}), (req, res) => {
   Users.findOneAndUpdate({
       Username: req.params.Username
     }, {
@@ -210,7 +211,9 @@ router.put('/:Username', (req, res) => {
  */
 
 // Add a movie to a user's list of favorites
-router.post('/:Username/:MovieID', (req, res) => {
+router.post('/:Username/:MovieID', passport.authenticate('jwt', {
+  session: false
+}), (req, res) => {
   Users.findOneAndUpdate({
       Username: req.params.Username
     }, {
@@ -263,7 +266,9 @@ router.post('/:Username/:MovieID', (req, res) => {
  *        description: Some error happened
  */
 
-router.delete('/:Username/:MovieID', (req, res) => {
+router.delete('/:Username/:MovieID', passport.authenticate('jwt', {
+  session: false
+}), (req, res) => {
   Users.findOneAndUpdate({
       Username: req.params.Username
     }, {
@@ -305,19 +310,23 @@ router.delete('/:Username/:MovieID', (req, res) => {
  */
 
 // Delete a user by username
-router.delete('/:Username', (req, res) => {
-  Users.findOneAndRemove({Username: req.params.Username})
-      .then((user) => {
-          if(!user) {
-              res.status(409).send(req.params.Username + ' was not found.');
-          } else {
-              res.status(200).send(req.params.Username + ' was deleted.');
-          }
-      })
-      .catch((err) => {
-          console.error(err);
-          res.status (500).send('Error: ' + err);
-      });
+router.delete('/:Username', passport.authenticate('jwt', {
+  session: false
+}), (req, res) => {
+  Users.findOneAndRemove({
+      Username: req.params.Username
+    })
+    .then((user) => {
+      if (!user) {
+        res.status(409).send(req.params.Username + ' was not found.');
+      } else {
+        res.status(200).send(req.params.Username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 

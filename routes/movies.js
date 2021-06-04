@@ -4,12 +4,9 @@ const express = require("express"),
     mongoose = require('mongoose'),
     Models = require('../js/models.js'),
     Movies = Models.Movie,
-    Users = Models.User;
-
-mongoose.connect('mongodb://localhost:27017/myFlixDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+    Users = Models.User,
+    passport = require('passport');
+    require('../js/passport.js'); 
 
 /**
  * @swagger
@@ -74,8 +71,17 @@ mongoose.connect('mongodb://localhost:27017/myFlixDB', {
  *                 $ref: '#/components/schemas/Movie'
  */
 
-router.get("/", (req, res) => {
-    Movies.find().then(movies => res.json(movies));
+router.get('/', passport.authenticate('jwt', {
+    session: false
+}), (req, res) => {
+    Movies.find()
+        .then((movies) => {
+            res.status(201).json(movies);
+        })
+        .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+        });
 });
 
 /**
@@ -102,7 +108,9 @@ router.get("/", (req, res) => {
  *         description: The movie was not found
  */
 
-router.get('/:id', (req, res) => {
+router.get('/:id', passport.authenticate('jwt', {
+    session: false
+}), (req, res) => {
     Movies.findById(req.params.id, (error, movie) => {
         console.log(movie)
         if (error) {
