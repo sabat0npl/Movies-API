@@ -12,7 +12,13 @@ const express = require('express'),
   Models = require('./js/models.js'),
   Movies = Models.Movie,
   Users = Models.User,
-  passport = require('passport');
+  passport = require('passport'),
+  cors = require('cors'),
+  {
+    check,
+    validationResult
+  } = require('express-validator');
+
 require('./js/passport.js');
 
 mongoose.connect('mongodb://localhost:27017/myFlixDB', {
@@ -40,6 +46,8 @@ const options = {
 const specs = swaggerJsDoc(options);
 
 const app = express();
+
+app.use(cors());
 
 let auth = require('./routes/auth.js')(app);
 
