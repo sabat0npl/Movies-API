@@ -51,7 +51,7 @@ app.use(cors());
 
 let auth = require('./routes/auth.js')(app);
 
-app.use("/documentation", swaggerUI.serve, swaggerUI.setup(specs));
+app.use("/", swaggerUI.serve, swaggerUI.setup(specs));
 
 app.use(express.json());
 app.use(morgan("dev"));
