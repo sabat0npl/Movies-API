@@ -25,7 +25,7 @@ require('./js/passport.js');
 //   useUnifiedTopology: true
 // });
 
-mongoose.connect("mongodb+srv://admin:pomidor@cluster0.8x8mn.mongodb.net/myFlixDB?retryWrites=true&w=majority", {
+mongoose.connect(process.env.CONNECTION_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -53,7 +53,11 @@ let auth = require('./routes/auth.js')(app);
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.use("/", swaggerUI.serve, swaggerUI.setup(specs));
+app.use("/documentation", swaggerUI.serve, swaggerUI.setup(specs));
+
+app.get('/', (req, res) => {
+  res.redirect('/documentation');
+});
 
 app.use("/movies", moviesRouter);
 app.use("/genres", genresRouter);
