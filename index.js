@@ -26,7 +26,7 @@ require('./js/passport.js');
 //   useUnifiedTopology: true
 // });
 
-mongoose.connect(process.env.CONNECTION_URI, {
+mongoose.connect("mongodb+srv://admin:pomidor@cluster0.8x8mn.mongodb.net/myFlixDB?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -40,10 +40,7 @@ const options = {
       title: "Library API",
       version: "1.0.0",
       description: "A simple Express Library API",
-    },
-    servers: [{
-      url: "http://localhost:8080",
-    }, ],
+    }
   },
   apis: ["./routes/*.js"],
 };
