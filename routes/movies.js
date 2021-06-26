@@ -71,9 +71,11 @@ const express = require("express"),
  *                 $ref: '#/components/schemas/Movie'
  */
 
-router.get('/', passport.authenticate('jwt', {
-    session: false
-}), (req, res) => {
+//  passport.authenticate('jwt', {
+//     session: false
+// })
+
+router.get('/', (req, res) => {
     Movies.find()
         .then((movies) => {
             res.status(201).json(movies);
