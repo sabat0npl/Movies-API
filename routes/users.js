@@ -225,7 +225,7 @@ router.put('/:Username', [
 /**
  * @swagger
  * /users/{name}{id}:
- *  put:
+ *  post:
  *    summary: Update the user favourites by the name and title
  *    tags: [users]
  *    parameters:
