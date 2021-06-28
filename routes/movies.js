@@ -75,7 +75,7 @@ const express = require("express"),
 //     session: false
 // })
 
-router.get('/', (req, res) => {
+router.get('/', passport.authenticate('jwt', { session: false}), (req, res) =>  {
     Movies.find()
         .then((movies) => {
             res.status(201).json(movies);
@@ -110,9 +110,7 @@ router.get('/', (req, res) => {
  *         description: The movie was not found
  */
 
-router.get('/:id', passport.authenticate('jwt', {
-    session: false
-}), (req, res) => {
+router.get('/:id', passport.authenticate('jwt', { session: false}), (req, res) => {
     Movies.findById(req.params.id, (error, movie) => {
         console.log(movie)
         if (error) {
