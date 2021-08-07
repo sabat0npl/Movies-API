@@ -28,7 +28,8 @@ The web application will provide users with access to information about differen
 10. passport-jwt
 11. passport-local
 12. swagger-jsdoc
-13. uuid
+13. swagger-ui-express
+14. uuid
 
 ### Environment
 1. **Visual Studio Code** 
